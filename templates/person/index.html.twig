@@ -18,9 +18,11 @@
             <tr>
                 <td>{{ person.id }}</td>
                 <td>{{ person.firstName }} {{ person.lastName }}</td>
-                <td>{{ person.birthDay }}</td>
+                <td>{{ person.birthDay | date }}</td>
                 <td>
-                    <a href="#">Delete</a>
+                    <a href="{{ path('person_show', {'id': person.id}) }}">Show</a>
+                    <a href="{{ path('person_edit', {'id': person.id}) }}">Edit</a>
+                    <a href="{{ path('person_delete', {'id': person.id}) }}">Delete</a>
                 </td>
             </tr>
         {% endfor %}
@@ -37,4 +39,6 @@
         </tr>
         </tfoot>
     </table>
+
+    <a href="{{ path('person_add') }}" class="btn btn-primary">Add a Person</a>
 {% endblock %}

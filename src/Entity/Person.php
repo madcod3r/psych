@@ -53,6 +53,11 @@ class Person
         return $this->lastName;
     }
 
+    public function getName(): ?string
+    {
+        return $this->lastName . ($this->firstName ? ' ' . $this->firstName : '');
+    }
+
     public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
