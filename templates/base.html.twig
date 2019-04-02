@@ -8,10 +8,34 @@
         <title>{% block title %}{% block subTitle %}Home{% endblock %} | Psycho analysis{% endblock %}</title>
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/main.css') }}">
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {% block body %}
+            <div class="cover-container d-flex h-100 p-3 mx-auto flex-column text-center">
+                <header class="masthead mb-auto">
+                    <div class="inner">
+                        <h3 class="masthead-brand">Your lucky number is #333</h3>
+                        <nav class="nav nav-masthead justify-content-center">
+                            <a class="nav-link active" href="{{ path('app_default_index') }}">Home</a>
+                            <a class="nav-link" href="{{ path('person') }}">Person List</a>
+                            <a class="nav-link" href="#">Contact</a>
+                        </nav>
+                    </div>
+                </header>
+
+                <main role="main" class="inner cover">
+                    {% block content %}{% endblock %}
+                </main>
+
+                <footer class="mastfoot mt-auto">
+                    <div class="inner">
+                        <p>Cover template for <a href="https://getbootstrap.com/">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+                    </div>
+                </footer>
+            </div>
+        {% endblock %}
         {% block javascripts %}
             <script src="{{ asset('js/jquery-3.3.1.slim.min.js') }}"></script>
             <script src="{{ asset('js/popper.min.js') }}"></script>
