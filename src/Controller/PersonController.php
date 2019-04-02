@@ -14,25 +14,31 @@ class PersonController extends AbstractController
      */
     public function index()
     {
-        return $this->render('person/index.html.twig');
+        $persons = $this->getDoctrine()
+            ->getRepository(Person::class)
+            ->findAll();
+
+        return $this->render('person/index.html.twig', [
+            'persons' => $persons
+        ]);
     }
 
     /**
-     * @Route("/person/{id}", name="people_show")
+     * @Route("/person/{id}", name="person_show")
      */
     public function show($id)
     {
-        $product = $this->getDoctrine()
+        $person = $this->getDoctrine()
             ->getRepository(Person::class)
             ->find($id);
 
-        if (!$product) {
+        if (!$person) {
             throw $this->createNotFoundException(
-                'No people found for id '.$id
+                'No person found for id '.$id
             );
         }
 
-        return new Response('Check out this great product: '.$product->getName());
+        return new Response('Check out this person: '.$person->getName());
 
         // or render a template
         // in the template, print things with {{ product.name }}

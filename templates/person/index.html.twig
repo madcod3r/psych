@@ -3,5 +3,38 @@
 {% block subTitle %}Person List{% endblock %}
 
 {% block body %}
-qwe
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Birthday</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for person in persons %}
+            <tr>
+                <td>{{ person.id }}</td>
+                <td>{{ person.firstName }} {{ person.lastName }}</td>
+                <td>{{ person.birthDay }}</td>
+                <td>
+                    <a href="#">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+        {% if persons|length == 0 %}
+            <tr>
+                <td colspan="4">No persons.</td>
+            </tr>
+        {% endif %}
+        </tbody>
+
+        <tfoot>
+        <tr>
+            <td colspan="4">Count: {{ persons|length }}</td>
+        </tr>
+        </tfoot>
+    </table>
 {% endblock %}
