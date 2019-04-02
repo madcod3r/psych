@@ -3,127 +3,94 @@
 namespace App\Controller;
 
 use App\Entity\Person;
+use App\Form\PersonType;
+use App\Repository\PersonRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/person")
+ */
 class PersonController extends AbstractController
 {
     /**
-     * @Route("/person", name="person")
+     * @Route("/", name="person_index", methods={"GET"})
      */
-    public function index()
+    public function index(PersonRepository $personRepository): Response
     {
-        $persons = $this->getDoctrine()
-            ->getRepository(Person::class)
-            ->findAll();
-
         return $this->render('person/index.html.twig', [
-            'persons' => $persons
+            'people' => $personRepository->findAll(),
         ]);
     }
 
     /**
-     * @Route(
-     *     "/person/{id}",
-     *     name="person_show",
-     *     requirements={"id"="\d+"}
-     *     )
+     * @Route("/new", name="person_new", methods={"GET","POST"})
      */
-    public function show($id)
+    public function new(Request $request): Response
     {
-        $person = $this->getDoctrine()
-            ->getRepository(Person::class)
-            ->find($id);
+        $person = new Person();
+        $form = $this->createForm(PersonType::class, $person);
+        $form->handleRequest($request);
 
-        if (!$person) {
-            throw $this->createNotFoundException(
-                'No person found for id '.$id
-            );
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($person);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('person_index');
         }
 
-        return new Response('Check out this person: '.$person->getName());
-
-        // or render a template
-        // in the template, print things with {{ product.name }}
-        // return $this->render('product/show.html.twig', ['product' => $product]);
-    }
-
-    /**
-     * @Route("/person/add", name="person_add")
-     */
-    public function add()
-    {
-        $entityManager = $this->getDoctrine()->getManager();
-        $person = new Person;
-
-        $person->setFirstName('Oleg');
-        $person->setLastName('Voloshyn');
-        $person->setBirthDay(new \DateTime('now'));
-
-        $entityManager->persist($person);
-        $entityManager->flush();
-
-
-        $this->addFlash(
-            'success',
-            'Added new person "' . $person->getName() . '"!'
-        );
-
-        return $this->redirectToRoute('person', [
-            'id' => $person->getId()
+        return $this->render('person/new.html.twig', [
+            'person' => $person,
+            'form' => $form->createView(),
         ]);
     }
 
     /**
-     * @Route("/person/edit/{id}", name="person_edit", requirements={"id"="\d+"})
+     * @Route("/{id}", name="person_show", methods={"GET"})
      */
-    public function update($id)
+    public function show(Person $person): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $person = $entityManager->getRepository(Person::class)->find($id);
-
-        if (!$person) {
-            throw $this->createNotFoundException(
-                'No person found for id ' . $id
-            );
-        }
-
-        $person->setFirstName('Oleg');
-        $entityManager->flush();
-
-        $this->addFlash(
-            'success',
-            'Changed person "' . $person->getName() . '"!'
-        );
-
-        return $this->redirectToRoute('person', [
-            'id' => $person->getId()
+        return $this->render('person/show.html.twig', [
+            'person' => $person,
         ]);
     }
 
     /**
-     * @Route("/person/delete/{id}", name="person_delete", requirements={"id"="\d+"})
+     * @Route("/{id}/edit", name="person_edit", methods={"GET","POST"})
      */
-    public function delete($id)
+    public function edit(Request $request, Person $person): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $person = $entityManager->getRepository(Person::class)->find($id);
+        $form = $this->createForm(PersonType::class, $person);
+        $form->handleRequest($request);
 
-        if (!$person) {
-            throw $this->createNotFoundException(
-                'No person found for id '.$id
-            );
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('person_index', [
+                'id' => $person->getId(),
+            ]);
         }
 
-        $entityManager->remove($person);
-        $entityManager->flush();
+        return $this->render('person/edit.html.twig', [
+            'person' => $person,
+            'form' => $form->createView(),
+        ]);
+    }
 
-        $this->addFlash(
-            'notice',
-            'Removed person "' . $person->getName() . '"!'
-        );
+    /**
+     * @Route("/{id}", name="person_delete", methods={"DELETE"})
+     */
+    public function delete(Request $request, Person $person): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$person->getId(), $request->request->get('_token'))) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($person);
+            $entityManager->flush();
+        }
 
-        return $this->redirectToRoute('person');
+        return $this->redirectToRoute('person_index');
     }
 }
