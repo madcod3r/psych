@@ -1,18 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Person index{% endblock %}
+{% block subTitle %}Person index{% endblock %}
 
-{% block body %}
-    <h1>Person index</h1>
+{% block content %}
+    <h1>Person List</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>FirstName</th>
-                <th>LastName</th>
-                <th>BirthDay</th>
-                <th>actions</th>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Birthday</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -23,8 +23,9 @@
                 <td>{{ person.lastName }}</td>
                 <td>{{ person.birthDay ? person.birthDay|date('Y-m-d H:i:s') : '' }}</td>
                 <td>
-                    <a href="{{ path('person_show', {'id': person.id}) }}">show</a>
-                    <a href="{{ path('person_edit', {'id': person.id}) }}">edit</a>
+                    <a class="btn btn-info" href="{{ path('person_show', {'id': person.id}) }}">show</a>
+                    <a class="btn btn-dark" href="{{ path('person_edit', {'id': person.id}) }}">edit</a>
+                    {{ include('person/_delete_form.html.twig') }}
                 </td>
             </tr>
         {% else %}
@@ -35,5 +36,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('person_new') }}">Create new</a>
+    <a class="btn btn-primary" href="{{ path('person_new') }}">Create new</a>
 {% endblock %}
